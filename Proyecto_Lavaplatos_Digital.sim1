@@ -22,13 +22,13 @@
 
 <item itemtype="Push" CircId="Push-41" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-336" rotation="0" hflip="1" vflip="1" label="Push-41" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="⏻" />
 
-<item itemtype="Push" CircId="Push-42" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-300" rotation="0" hflip="1" vflip="1" label="Push-42" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="▶" />
+<item itemtype="Push" CircId="Push-42" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-284" rotation="0" hflip="1" vflip="1" label="Push-42" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" Key="▶" />
 
 <item itemtype="Image" CircId="Image-38" mainComp="false" Show_id="false" Show_Val="false" Pos="52,216" rotation="0" hflip="1" vflip="1" label="Image-38" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="832 _px" V_size="1248 _px" Border="2 _px" Z_Value="-3" Color="#a0a0a4" Opacity="1" Image_File="Recursos/Lavaplatos_Cerrado.png" />
 
 <item itemtype="Image" CircId="Image-32" mainComp="false" Show_id="false" Show_Val="false" Pos="52,216" rotation="0" hflip="1" vflip="1" label="Image-32" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="832 _px" V_size="1248 _px" Border="2 _px" Z_Value="-1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/Lavaplatos_Abierto.png" />
 
-<item itemtype="KeyPad" CircId="KeyPad-23" mainComp="false" Show_id="false" Show_Val="false" Pos="-172,-316" rotation="0" hflip="1" vflip="1" label="KeyPad-23" idLabPos="-8,-16" labelrot="0" valLabPos="-16,20" valLabRot="0" Rows="1" Cols="2" Key_Labels="○●" />
+<item itemtype="KeyPad" CircId="KeyPad-23" mainComp="false" Show_id="false" Show_Val="false" Pos="-160,-316" rotation="0" hflip="1" vflip="1" label="KeyPad-23" idLabPos="-8,-16" labelrot="0" valLabPos="-16,20" valLabRot="0" Rows="1" Cols="2" Key_Labels="○●" />
 
 <item itemtype="Image" CircId="Image-45" mainComp="false" Show_id="false" Show_Val="false" Pos="52,216" rotation="0" hflip="1" vflip="1" label="Image-45" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="832 _px" V_size="1248 _px" Border="2 _px" Z_Value="-2" Color="#a0a0a4" Opacity="1" Image_File="Recursos/Lavaplatos_Lleno.png" />
 
@@ -61,6 +61,30 @@
 <item itemtype="Ground" CircId="Ground-94" mainComp="false" Show_id="false" Show_Val="false" Pos="472,472" rotation="0" hflip="1" vflip="1" label="Ground-94" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
 <item itemtype="DcMotor" CircId="DcMotor-95" mainComp="false" Show_id="false" Show_Val="false" Pos="428,256" rotation="0" hflip="1" vflip="1" label="DcMotor-95" idLabPos="-22,-48" labelrot="0" valLabPos="-14,36" valLabRot="0" RPM_Nominal="300 _RPM" Volt_Nominal="5 V" Resistance="100 Ω" />
+
+<item itemtype="Image" CircId="Image-102" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-332" rotation="0" hflip="1" vflip="1" label="Image-102" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonOn.png" />
+
+<item itemtype="Image" CircId="Image-103" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-332" rotation="0" hflip="1" vflip="1" label="Image-103" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonOff.png" />
+
+<item itemtype="Image" CircId="Image-105" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-272" rotation="0" hflip="1" vflip="1" label="Image-105" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonPlayPressed.png" />
+
+<item itemtype="Image" CircId="Image-106" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-272" rotation="0" hflip="1" vflip="1" label="Image-106" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonPlay.png" />
+
+<item itemtype="Image" CircId="Image-107" mainComp="false" Show_id="false" Show_Val="false" Pos="232,-308" rotation="0" hflip="1" vflip="1" label="Image-107" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="90 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonTemperatura.png" />
+
+<item itemtype="Image" CircId="Image-108" mainComp="false" Show_id="false" Show_Val="false" Pos="212,-308" rotation="0" hflip="1" vflip="1" label="Image-108" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonTemperaturaPress.png" />
+
+<item itemtype="Image" CircId="Image-109" mainComp="false" Show_id="false" Show_Val="false" Pos="336,-308" rotation="0" hflip="1" vflip="1" label="Image-109" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="90 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonLvlAgua.png" />
+
+<item itemtype="Image" CircId="Image-111" mainComp="false" Show_id="false" Show_Val="false" Pos="316,-308" rotation="0" hflip="1" vflip="1" label="Image-111" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonLvlAguaPress.png" />
+
+<item itemtype="Image" CircId="Image-112" mainComp="false" Show_id="false" Show_Val="false" Pos="-176,-300" rotation="0" hflip="1" vflip="1" label="Image-112" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonEcoPress.png" />
+
+<item itemtype="Image" CircId="Image-113" mainComp="false" Show_id="false" Show_Val="false" Pos="-176,-300" rotation="0" hflip="1" vflip="1" label="Image-113" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonEco.png" />
+
+<item itemtype="Image" CircId="Image-114" mainComp="false" Show_id="false" Show_Val="false" Pos="-128,-300" rotation="0" hflip="1" vflip="1" label="Image-114" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="0" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonRelojPress.png" />
+
+<item itemtype="Image" CircId="Image-115" mainComp="false" Show_id="false" Show_Val="false" Pos="-128,-300" rotation="0" hflip="1" vflip="1" label="Image-115" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="50 _px" V_size="50 _px" Border="0 _px" Z_Value="1" Color="#a0a0a4" Opacity="1" Image_File="Recursos/BotonReloj.png" />
 
 <item itemtype="Node" CircId="Node-84" mainComp="false" Pos="-280,444" />
 

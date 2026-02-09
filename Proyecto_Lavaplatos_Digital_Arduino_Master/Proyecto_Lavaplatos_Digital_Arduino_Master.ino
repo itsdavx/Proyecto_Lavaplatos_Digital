@@ -1,16 +1,8 @@
+// ================= LIBRERIAS =================
 #include <LedControl.h>
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 
-// ================= PINES KEYPAD DE CONFIGURACION ===========
-#define CC1 21
-#define CF1 20
-#define CF2 19
-
-// ================= PINES DIODOS TEMPERATUDA ==============
-#define ST1 25
-#define ST2 24
-#define ST3 23
 // ================= PINES MATRIZ =================
 #define CS  53
 #define SCK 52
@@ -26,12 +18,12 @@
 #define BTN_CONFIG 46
 
 // ================= LCD =================
-#define LCD_RS 40
-#define LCD_EN 41
-#define LCD_D4 42
-#define LCD_D5 43
-#define LCD_D6 44
 #define LCD_D7 45
+#define LCD_D6 44
+#define LCD_D5 43
+#define LCD_D4 42
+#define LCD_EN 41
+#define LCD_RS 40
 
 // ================= LEDS =================
 #define T1 38
@@ -53,6 +45,16 @@
 
 // ================= EXTRAS =================
 #define BUZZER 26 
+
+// ================= PINES DIODOS TEMPERATUDA ==============
+#define ST1 25
+#define ST2 24
+#define ST3 23
+
+// ================= PINES KEYPAD DE CONFIGURACION ===========
+#define CC1 21
+#define CF1 20
+#define CF2 19
 
 // ================= OBJETOS =================
 LedControl lc(DIN, SCK, CS, 8);
@@ -92,10 +94,10 @@ bool lavadoActivo = false;
 bool pausa = false;
 bool mostrarMarca = true;
 bool configuracionActivado =true;
-bool modoConfig = false; // true = eligiendo tipo de lavado
+bool modoConfig = false;
 
-byte nivelTemp = 0;  // 0=BAJO, 1=MEDIO, 2=ALTO
-byte nivelAgua = 0;  // 0=BAJO, 1=MEDIO, 2=ALTO
+byte nivelTemp = 0;   // 0=BAJO,   1=MEDIO,     2=ALTO
+byte nivelAgua = 0;   // 0=BAJO,   1=MEDIO,     2=ALTO
 byte nivelConfig = 0; // 0=NORMAL, 1=ECOLOGICO, 2=A PRESION
 
 unsigned long tiempoInicioLavado = 0;
@@ -128,8 +130,7 @@ void loop() {
 
 // ================= KEYPADS =================
 void leerConfiguracionAvanzada() {
-  
-    // --- TECLADO CONFIG ---
+
   if (modoConfig) {
     char c = tecladoConfig.getKey();
     if (c) {
@@ -148,7 +149,6 @@ void leerConfiguracionAvanzada() {
     return;
   }
 
-  // Leer teclado de temperatura
   char t = tecladoTemp.getKey();
   if (t) {
     if (t == 'o') { // Aumentar temperatura
@@ -216,7 +216,6 @@ void sonar(int tipo) {
 // ================= BOTONES =================
 void leerPulsadoresGenerales() {
 
-  // --- BOTÓN CONFIG ---
   if (digitalRead(BTN_CONFIG) && sistemaEncendido && (!lavadoActivo || pausa)) {
     delay(50);
     if (digitalRead(BTN_CONFIG)) {
@@ -226,7 +225,7 @@ void leerPulsadoresGenerales() {
       if (modoConfig) {
         lcd.clear();
         lcd.print("MODO LAVADO");
-        aplicarModoLavado();      // fuerza parámetros
+        aplicarModoLavado();
       } else {
         lcd.clear();
         lcd.print("CONFIG MANUAL");
@@ -376,7 +375,6 @@ void actualizarPantallaConfig() {
 
 // ================= LEDS =================
 void actualizarLeds() {
-  // LEDs del tablero (temperatura)
   digitalWrite(T1, LOW);
   digitalWrite(T2, LOW);
   digitalWrite(T3, LOW);
@@ -385,7 +383,6 @@ void actualizarLeds() {
   else if (nivelTemp == 1) digitalWrite(T2, HIGH);
   else if (nivelTemp == 2) digitalWrite(T3, HIGH);
 
-  // LEDs del tablero (agua)
   digitalWrite(N1, LOW);
   digitalWrite(N2, LOW);
   digitalWrite(N3, LOW);
@@ -394,7 +391,6 @@ void actualizarLeds() {
   else if (nivelAgua == 1) digitalWrite(N2, HIGH);
   else if (nivelAgua == 2) digitalWrite(N3, HIGH);
 
-  // Simulación real de temperatura
   simularTemperatura();
 }
 
@@ -404,7 +400,7 @@ bool delayNoBloqueante(unsigned long ms) {
   while (millis() - inicio < ms) {
     leerPulsadoresGenerales();
     if (pausa || !sistemaEncendido) return false;
-    delay(1); // pequeño delay para no saturar
+    delay(1);
   }
   return true;
 }
@@ -588,7 +584,6 @@ void aguaAlto(bool activo) {
         return;
       }
 
-      // ENCENDER
       for (int m = 0; m <= 3; m++) {
         lc.setLed(7-m, f,     c,     true);
         lc.setLed(7-m, f-2,   c-3,   true);
@@ -607,7 +602,6 @@ void aguaAlto(bool activo) {
         return;
       }
 
-      // APAGAR
       for (int m = 0; m <= 3; m++) {
         lc.setLed(7-m, f,     c,     false);
         lc.setLed(7-m, f-2,   c-3,   false);
@@ -642,7 +636,6 @@ void inicializarEntradas(){
   pinMode(BTN_START,INPUT);
   pinMode(BUZZER,OUTPUT);
   
-  // Configurar LEDs como salida
   pinMode(T1,OUTPUT); 
   pinMode(T2,OUTPUT); 
   pinMode(T3,OUTPUT);
@@ -696,12 +689,12 @@ void inicializarLedsTemperatura(){
 }
 
 void simularTemperatura() {
-  // Apagar siempre primero
+
   digitalWrite(ST1, LOW);
   digitalWrite(ST2, LOW);
   digitalWrite(ST3, LOW);
 
-  // Solo simular temperatura si el lavado está activo y no está en pausa
+
   if (!lavadoActivo || pausa) return;
 
   if (nivelTemp == 0) {
@@ -719,7 +712,7 @@ void aplicarModoLavado() {
   switch (nivelConfig) {
     case 0: // NORMAL
       nivelAgua = 1;
-      nivelTemp = 0;
+      nivelTemp = 1;
       break;
 
     case 1: // ECOLOGICO
@@ -729,7 +722,7 @@ void aplicarModoLavado() {
 
     case 2: // A PRESION
       nivelAgua = 2;
-      nivelTemp = 0;
+      nivelTemp = 2;
       break;
   }
   actualizarLeds();

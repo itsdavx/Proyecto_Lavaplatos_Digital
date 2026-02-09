@@ -2,6 +2,15 @@
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 
+// ================= PINES KEYPAD DE CONFIGURACION ===========
+#define CC1 21
+#define CF1 20
+#define CF2 19
+
+// ================= PINES DIODOS TEMPERATUDA ==============
+#define ST1 25
+#define ST2 24
+#define ST3 23
 // ================= PINES MATRIZ =================
 #define CS  53
 #define SCK 52
@@ -14,6 +23,7 @@
 // ================= PULSADORES =================
 #define BTN_ON    48
 #define BTN_START 47
+#define BTN_CONFIG 46
 
 // ================= LCD =================
 #define LCD_RS 40
@@ -50,8 +60,8 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // ================= KEYPADS =================
 char teclasTemp[2][1] = {
-  {'o'}, // Tecla aumentar temperatura (TF1)
-  {'k'}  // Tecla disminuir temperatura (TF2)
+  {'o'}, // Tecla aumentar temperatura
+  {'k'}  // Tecla disminuir temperatura
 };
 
 byte filasTemp[2] = {TF1, TF2};
@@ -59,22 +69,34 @@ byte colsTemp[1]  = {TC1};
 Keypad tecladoTemp(makeKeymap(teclasTemp), filasTemp, colsTemp, 2, 1);
 
 char teclasAgua[2][1] = {
-  {'p'}, // Tecla aumentar agua (NAF1)
-  {'l'}  // Tecla disminuir agua (NAF2)
+  {'p'}, // Tecla aumentar agua
+  {'l'}  // Tecla disminuir agua
 };
 
 byte filasAgua[2] = {NAF1, NAF2};
 byte colsAgua[1]  = {NAC1};
 Keypad tecladoAgua(makeKeymap(teclasAgua), filasAgua, colsAgua, 2, 1);
 
+char teclasConfig[2][1] = {
+  {'i'}, // Tecla subir un configuracion
+  {'j'}  // Tecla bajar un configuracion
+};
+
+byte filasConfig[2] = {CF1, CF2};
+byte colsConfig[1]  = {CC1};
+Keypad tecladoConfig(makeKeymap(teclasConfig), filasConfig, colsConfig, 2, 1);
+
 // ================= ESTADO =================
 bool sistemaEncendido = false;
 bool lavadoActivo = false;
 bool pausa = false;
 bool mostrarMarca = true;
+bool configuracionActivado =true;
+bool modoConfig = false; // true = eligiendo tipo de lavado
 
 byte nivelTemp = 0;  // 0=BAJO, 1=MEDIO, 2=ALTO
 byte nivelAgua = 0;  // 0=BAJO, 1=MEDIO, 2=ALTO
+byte nivelConfig = 0; // 0=NORMAL, 1=ECOLOGICO, 2=A PRESION
 
 unsigned long tiempoInicioLavado = 0;
 unsigned long tiempoPausaInicio = 0;
@@ -83,6 +105,7 @@ byte etapa = 0;
 
 // ================= SETUP =================
 void setup() {
+  inicializarLedsTemperatura();
   inicializarLedControl();
   inicializarMotores();
   inicializarLCD();
@@ -95,7 +118,6 @@ void loop() {
   leerPulsadoresGenerales();
 
   if (sistemaEncendido) {
-    // Permitir configuración cuando NO está activo O cuando está en PAUSA
     if (!lavadoActivo || pausa) {
       leerConfiguracionAvanzada();
     }
@@ -107,6 +129,25 @@ void loop() {
 // ================= KEYPADS =================
 void leerConfiguracionAvanzada() {
   
+    // --- TECLADO CONFIG ---
+  if (modoConfig) {
+    char c = tecladoConfig.getKey();
+    if (c) {
+      if (c == 'i') {
+        nivelConfig = (nivelConfig + 1) % 3;
+      } 
+      else if (c == 'j') {
+        nivelConfig = (nivelConfig + 2) % 3;
+      }
+
+      aplicarModoLavado();
+      sonar(2);
+      actualizarPantallaConfig();
+      delay(200);
+    }
+    return;
+  }
+
   // Leer teclado de temperatura
   char t = tecladoTemp.getKey();
   if (t) {
@@ -114,7 +155,7 @@ void leerConfiguracionAvanzada() {
       if (nivelTemp < 2) {
         nivelTemp++;
       } else {
-        nivelTemp = 2; // Mantener en máximo
+        nivelTemp = 2;
       }
       sonar(2);
       actualizarLeds();
@@ -125,7 +166,7 @@ void leerConfiguracionAvanzada() {
       if (nivelTemp > 0) {
         nivelTemp--;
       } else {
-        nivelTemp = 0; // Mantener en mínimo
+        nivelTemp = 0;
       }
       sonar(2);
       actualizarLeds();
@@ -141,7 +182,7 @@ void leerConfiguracionAvanzada() {
       if (nivelAgua < 2) {
         nivelAgua++;
       } else {
-        nivelAgua = 2; // Mantener en máximo
+        nivelAgua = 2;
       }
       sonar(2);
       actualizarLeds();
@@ -152,7 +193,7 @@ void leerConfiguracionAvanzada() {
       if (nivelAgua > 0) {
         nivelAgua--;
       } else {
-        nivelAgua = 0; // Mantener en mínimo
+        nivelAgua = 0;
       }
       sonar(2);
       actualizarLeds();
@@ -174,6 +215,26 @@ void sonar(int tipo) {
 
 // ================= BOTONES =================
 void leerPulsadoresGenerales() {
+
+  // --- BOTÓN CONFIG ---
+  if (digitalRead(BTN_CONFIG) && sistemaEncendido && (!lavadoActivo || pausa)) {
+    delay(50);
+    if (digitalRead(BTN_CONFIG)) {
+      modoConfig = !modoConfig;
+      sonar(2);
+
+      if (modoConfig) {
+        lcd.clear();
+        lcd.print("MODO LAVADO");
+        aplicarModoLavado();      // fuerza parámetros
+      } else {
+        lcd.clear();
+        lcd.print("CONFIG MANUAL");
+      }
+      actualizarPantallaConfig();
+      while (digitalRead(BTN_CONFIG));
+    }
+  }
 
   if (digitalRead(BTN_ON)) {
     delay(50);
@@ -284,6 +345,16 @@ void mostrarLCD(unsigned long t) {
 }
 
 void actualizarPantallaConfig() {
+
+    if (modoConfig) {
+    lcd.setCursor(0,1);
+    lcd.print("MODO: ");
+    if (nivelConfig == 0) lcd.print("NORMAL     ");
+    else if (nivelConfig == 1) lcd.print("ECOLOGICO  ");
+    else lcd.print("PRESION    ");
+    return;
+  }
+
   if (!mostrarMarca && (!lavadoActivo || pausa)) {
     lcd.setCursor(0,1);
     lcd.print("T:");
@@ -305,33 +376,26 @@ void actualizarPantallaConfig() {
 
 // ================= LEDS =================
 void actualizarLeds() {
-  // TEMPERATURA - Apagar todos primero
+  // LEDs del tablero (temperatura)
   digitalWrite(T1, LOW);
   digitalWrite(T2, LOW);
   digitalWrite(T3, LOW);
-  
-  // Encender solo el LED correspondiente a la temperatura
-  if (nivelTemp == 0) {
-    digitalWrite(T1, HIGH); // Temperatura BAJA
-  } else if (nivelTemp == 1) {
-    digitalWrite(T2, HIGH); // Temperatura MEDIA
-  } else if (nivelTemp == 2) {
-    digitalWrite(T3, HIGH); // Temperatura ALTA
-  }
-  
-  // AGUA - Apagar todos primero
+
+  if (nivelTemp == 0) digitalWrite(T1, HIGH);
+  else if (nivelTemp == 1) digitalWrite(T2, HIGH);
+  else if (nivelTemp == 2) digitalWrite(T3, HIGH);
+
+  // LEDs del tablero (agua)
   digitalWrite(N1, LOW);
   digitalWrite(N2, LOW);
   digitalWrite(N3, LOW);
-  
-  // Encender solo el LED correspondiente al agua
-  if (nivelAgua == 0) {
-    digitalWrite(N1, HIGH); // Agua BAJA
-  } else if (nivelAgua == 1) {
-    digitalWrite(N2, HIGH); // Agua MEDIA
-  } else if (nivelAgua == 2) {
-    digitalWrite(N3, HIGH); // Agua ALTA
-  }
+
+  if (nivelAgua == 0) digitalWrite(N1, HIGH);
+  else if (nivelAgua == 1) digitalWrite(N2, HIGH);
+  else if (nivelAgua == 2) digitalWrite(N3, HIGH);
+
+  // Simulación real de temperatura
+  simularTemperatura();
 }
 
 // ================= DELAY NO BLOQUEANTE =================
@@ -367,8 +431,25 @@ void aguaBajo(bool activo) {
         return;
       }
       
-      lc.setLed(7,f,c,true); lc.setLed(6,f,c,true);
-      lc.setLed(0,f,7-c,true); lc.setLed(1,f,7-c,true);
+      lc.setLed(7,f,c,true);
+      lc.setLed(7,f-2,c-3,true);
+      lc.setLed(7,f-4,c-6,true);
+      lc.setLed(7,f-6,c-9,true);   
+
+      lc.setLed(6,f,c,true);
+      lc.setLed(6,f-2,c-3,true);
+      lc.setLed(6,f-4,c-6,true);
+      lc.setLed(6,f-6,c-9,true);
+
+      lc.setLed(0,f,7-c,true);
+      lc.setLed(0,f-2,4-c,true);
+      lc.setLed(0,f-4,1-c,true);
+      lc.setLed(0,f-6,-2-c,true);
+       
+      lc.setLed(1,f,7-c,true);
+      lc.setLed(1,f-2,4-c,true);
+      lc.setLed(1,f-4,1-c,true);
+      lc.setLed(1,f-6,-2-c,true);
       
       if (!delayNoBloqueante(80)) {
         apagarMotores();
@@ -376,11 +457,31 @@ void aguaBajo(bool activo) {
         return;
       }
       
-      lc.setLed(7,f,c,false); lc.setLed(6,f,c,false);
-      lc.setLed(0,f,7-c,false); lc.setLed(1,f,7-c,false);
+      lc.setLed(7,f,c,false);
+      lc.setLed(7,f-2,c-3,false);
+      lc.setLed(7,f-4,c-6,false);
+      lc.setLed(7,f-6,c-9,false);   
+
+      lc.setLed(6,f,c,false);
+      lc.setLed(6,f-2,c-3,false);
+      lc.setLed(6,f-4,c-6,false);
+      lc.setLed(6,f-6,c-9,false);
+
+      lc.setLed(0,f,7-c,false);
+      lc.setLed(0,f-2,4-c,false);
+      lc.setLed(0,f-4,1-c,false);
+      lc.setLed(0,f-6,-2-c,false);
+       
+      lc.setLed(1,f,7-c,false);
+      lc.setLed(1,f-2,4-c,false);
+      lc.setLed(1,f-4,1-c,false);
+      lc.setLed(1,f-6,-2-c,false);
+
     }
   }
 }
+
+
 
 void aguaMedio(bool activo) {
   motorMedio(activo);
@@ -397,8 +498,37 @@ void aguaMedio(bool activo) {
         return;
       }
       
-      lc.setLed(7,f,c,true); lc.setLed(6,f,c,true); lc.setLed(5,f,c,true);
-      lc.setLed(0,f,7-c,true); lc.setLed(1,f,7-c,true); lc.setLed(2,f,7-c,true);
+      lc.setLed(7,f,c,true);
+      lc.setLed(7,f-2,c-3,true);
+      lc.setLed(7,f-4,c-6,true);
+      lc.setLed(7,f-6,c-9,true);
+
+      lc.setLed(6,f,c,true);
+      lc.setLed(6,f-2,c-3,true);
+      lc.setLed(6,f-4,c-6,true);
+      lc.setLed(6,f-6,c-9,true);
+
+      lc.setLed(5,f,c,true);
+      lc.setLed(5,f-2,c-3,true);
+      lc.setLed(5,f-4,c-6,true);
+      lc.setLed(5,f-6,c-9,true);
+
+
+      lc.setLed(0,f,7-c,true);
+      lc.setLed(0,f-2,4-c,true);
+      lc.setLed(0,f-4,1-c,true);
+      lc.setLed(0,f-6,-2-c,true);
+
+      lc.setLed(1,f,7-c,true);
+      lc.setLed(1,f-2,4-c,true);
+      lc.setLed(1,f-4,1-c,true);
+      lc.setLed(1,f-6,-2-c,true);
+
+      lc.setLed(2,f,7-c,true);
+      lc.setLed(2,f-2,4-c,true);
+      lc.setLed(2,f-4,1-c,true);
+      lc.setLed(2,f-6,-2-c,true);
+
       
       if (!delayNoBloqueante(50)) {
         apagarMotores();
@@ -406,45 +536,93 @@ void aguaMedio(bool activo) {
         return;
       }
       
-      lc.setLed(7,f,c,false); lc.setLed(6,f,c,false); lc.setLed(5,f,c,false);
-      lc.setLed(0,f,7-c,false); lc.setLed(1,f,7-c,false); lc.setLed(2,f,7-c,false);
+      lc.setLed(7,f,c,false);
+      lc.setLed(7,f-2,c-3,false);
+      lc.setLed(7,f-4,c-6,false);
+      lc.setLed(7,f-6,c-9,false);
+
+      lc.setLed(6,f,c,false);
+      lc.setLed(6,f-2,c-3,false);
+      lc.setLed(6,f-4,c-6,false);
+      lc.setLed(6,f-6,c-9,false);
+
+      lc.setLed(5,f,c,false);
+      lc.setLed(5,f-2,c-3,false);
+      lc.setLed(5,f-4,c-6,false);
+      lc.setLed(5,f-6,c-9,false);
+
+
+      lc.setLed(0,f,7-c,false);
+      lc.setLed(0,f-2,4-c,false);
+      lc.setLed(0,f-4,1-c,false);
+      lc.setLed(0,f-6,-2-c,false);
+
+      lc.setLed(1,f,7-c,false);
+      lc.setLed(1,f-2,4-c,false);
+      lc.setLed(1,f-4,1-c,false);
+      lc.setLed(1,f-6,-2-c,false);
+
+      lc.setLed(2,f,7-c,false);
+      lc.setLed(2,f-2,4-c,false);
+      lc.setLed(2,f-4,1-c,false);
+      lc.setLed(2,f-6,-2-c,false);
+
     }
   }
 }
 
 void aguaAlto(bool activo) {
   motorAlto(activo);
-  for (int f=0; f<8; f++) {
-    if(pausa||!sistemaEncendido) {
+
+  for (int f = 0; f < 8; f++) {
+    if (pausa || !sistemaEncendido) {
       apagarMotores();
       limpiarMatriz();
       return;
     }
-    for (int c=0; c<8; c++) {
-      if(pausa||!sistemaEncendido) {
+
+    for (int c = 0; c < 8; c++) {
+      if (pausa || !sistemaEncendido) {
         apagarMotores();
         limpiarMatriz();
         return;
       }
-      
-      for (int m=0;m<=3;m++) {
-        lc.setLed(7-m,f,c,true);
-        lc.setLed(m,f,7-c,true);
+
+      // ENCENDER
+      for (int m = 0; m <= 3; m++) {
+        lc.setLed(7-m, f,     c,     true);
+        lc.setLed(7-m, f-2,   c-3,   true);
+        lc.setLed(7-m, f-4,   c-6,   true);
+        lc.setLed(7-m, f-6,   c-9,   true);
+
+        lc.setLed(m,   f,     7-c,   true);
+        lc.setLed(m,   f-2,   4-c,   true);
+        lc.setLed(m,   f-4,   1-c,   true);
+        lc.setLed(m,   f-6,  -2-c,   true);
       }
-      
+
       if (!delayNoBloqueante(30)) {
         apagarMotores();
         limpiarMatriz();
         return;
       }
-      
-      for (int m=0;m<=3;m++) {
-        lc.setLed(7-m,f,c,false);
-        lc.setLed(m,f,7-c,false);
+
+      // APAGAR
+      for (int m = 0; m <= 3; m++) {
+        lc.setLed(7-m, f,     c,     false);
+        lc.setLed(7-m, f-2,   c-3,   false);
+        lc.setLed(7-m, f-4,   c-6,   false);
+        lc.setLed(7-m, f-6,   c-9,   false);
+
+        lc.setLed(m,   f,     7-c,   false);
+        lc.setLed(m,   f-2,   4-c,   false);
+        lc.setLed(m,   f-4,   1-c,   false);
+        lc.setLed(m,   f-6,  -2-c,   false);
       }
     }
   }
 }
+
 
 // ================= HARDWARE =================
 void inicializarLedControl() {
@@ -509,6 +687,52 @@ void motorAlto(bool a){
 void apagarMotores(){ 
   digitalWrite(D0,LOW); 
   digitalWrite(D1,LOW); 
+}
+// ================= LEDS TEMPERATURA ============
+void inicializarLedsTemperatura(){
+  pinMode(ST1, OUTPUT);
+  pinMode(ST2, OUTPUT);
+  pinMode(ST3, OUTPUT);
+}
+
+void simularTemperatura() {
+  // Apagar siempre primero
+  digitalWrite(ST1, LOW);
+  digitalWrite(ST2, LOW);
+  digitalWrite(ST3, LOW);
+
+  // Solo simular temperatura si el lavado está activo y no está en pausa
+  if (!lavadoActivo || pausa) return;
+
+  if (nivelTemp == 0) {
+    digitalWrite(ST1, HIGH); // Azul - Fría
+  } 
+  else if (nivelTemp == 1) {
+    digitalWrite(ST2, HIGH); // Amarillo - Media
+  } 
+  else if (nivelTemp == 2) {
+    digitalWrite(ST3, HIGH); // Rojo - Alta
+  }
+}
+
+void aplicarModoLavado() {
+  switch (nivelConfig) {
+    case 0: // NORMAL
+      nivelAgua = 1;
+      nivelTemp = 0;
+      break;
+
+    case 1: // ECOLOGICO
+      nivelAgua = 0;
+      nivelTemp = 0;
+      break;
+
+    case 2: // A PRESION
+      nivelAgua = 2;
+      nivelTemp = 0;
+      break;
+  }
+  actualizarLeds();
 }
 
 // ================= RESET =================

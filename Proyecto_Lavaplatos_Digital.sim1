@@ -298,6 +298,20 @@
 
 <item itemtype="Image" CircId="Image-45" mainComp="false" Show_id="false" Show_Val="false" Pos="60,236" rotation="0" hflip="1" vflip="1" label="Image-45" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" H_size="832 _px" V_size="1248 _px" Border="2 _px" Z_Value="-2" Color="#a0a0a4" Opacity="1" Image_File="Recursos/Lavaplatos_Lleno.png" />
 
+<item itemtype="Subcircuit" CircId="8x8_led_595-1022" mainComp="false" Show_id="true" Show_Val="false" Pos="-352,-228" rotation="0" hflip="1" vflip="-1" label="8x8_led_595-1022" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1023" mainComp="false" Show_id="false" Show_Val="false" Pos="496,-628" rotation="0" hflip="-1" vflip="1" label="Tunnel-1023" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="DataIN" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1024" mainComp="false" Show_id="false" Show_Val="false" Pos="-344,-328" rotation="90" hflip="-1" vflip="1" label="Tunnel-1024" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="DataIN" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1025" mainComp="false" Show_id="false" Show_Val="false" Pos="500,-620" rotation="0" hflip="-1" vflip="1" label="Tunnel-1025" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="SCLK" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1026" mainComp="false" Show_id="false" Show_Val="false" Pos="-336,-332" rotation="-90" hflip="-1" vflip="-1" label="Tunnel-1026" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="SCLK" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1027" mainComp="false" Show_id="false" Show_Val="false" Pos="500,-612" rotation="0" hflip="-1" vflip="1" label="Tunnel-1027" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="RCLK" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-1028" mainComp="false" Show_id="false" Show_Val="false" Pos="-328,-332" rotation="-90" hflip="-1" vflip="-1" label="Tunnel-1028" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="RCLK" IsBus="false" />
+
 <item itemtype="Node" CircId="Node-335" mainComp="false" Pos="320,-144" />
 
 <item itemtype="Node" CircId="Node-336" mainComp="false" Pos="320,-136" />
@@ -1943,5 +1957,17 @@
 <item itemtype="Connector" uid="Connector-1902" startpinid="Mega-1-20" endpinid="Tunnel-1020-pin" pointList="492,-692,492,-692" />
 
 <item itemtype="Connector" uid="Connector-1903" startpinid="Mega-1-19" endpinid="Tunnel-1019-pin" pointList="492,-684,492,-684" />
+
+<item itemtype="Connector" uid="Connector-1904" startpinid="Tunnel-1023-pin" endpinid="Mega-1-12" pointList="496,-628,492,-628" />
+
+<item itemtype="Connector" uid="Connector-1905" startpinid="8x8_led_595-1022-DI" endpinid="Tunnel-1024-pin" pointList="-344,-324,-344,-328" />
+
+<item itemtype="Connector" uid="Connector-1906" startpinid="Tunnel-1025-pin" endpinid="Mega-1-11" pointList="500,-620,492,-620" />
+
+<item itemtype="Connector" uid="Connector-1907" startpinid="Tunnel-1027-pin" endpinid="Mega-1-10" pointList="500,-612,492,-612" />
+
+<item itemtype="Connector" uid="Connector-1909" startpinid="Tunnel-1028-pin" endpinid="8x8_led_595-1022-RCLK" pointList="-328,-332,-328,-324" />
+
+<item itemtype="Connector" uid="Connector-1908" startpinid="Tunnel-1026-pin" endpinid="8x8_led_595-1022-SCLK" pointList="-336,-332,-336,-324" />
 
 </circuit>
